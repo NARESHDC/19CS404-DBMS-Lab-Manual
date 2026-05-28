@@ -1,313 +1,432 @@
-# Experiment 2: DDL Commands
+
+
+# Experiment 6: Joins
 
 ## AIM
-To study and implement DDL commands and different types of constraints.
+To study and implement different types of joins.
 
 ## THEORY
 
-### 1. CREATE
-Used to create a new relation (table).
+SQL Joins are used to combine records from two or more tables based on a related column.
+
+### 1. INNER JOIN
+Returns records with matching values in both tables.
 
 **Syntax:**
 ```sql
-CREATE TABLE (
-  field_1 data_type(size),
-  field_2 data_type(size),
-  ...
-);
+SELECT columns
+FROM table1
+INNER JOIN table2
+ON table1.column = table2.column;
 ```
-### 2. ALTER
-Used to add, modify, drop, or rename fields in an existing relation.
-(a) ADD
-```sql
-ALTER TABLE std ADD (Address CHAR(10));
-```
-(b) MODIFY
-```sql
-ALTER TABLE relation_name MODIFY (field_1 new_data_type(size));
-```
-(c) DROP
-```sql
-ALTER TABLE relation_name DROP COLUMN field_name;
-```
-(d) RENAME
-```sql
-ALTER TABLE relation_name RENAME COLUMN old_field_name TO new_field_name;
-```
-### 3. DROP TABLE
-Used to permanently delete the structure and data of a table.
-```sql
-DROP TABLE relation_name;
-```
-### 4. RENAME
-Used to rename an existing database object.
-```sql
-RENAME TABLE old_relation_name TO new_relation_name;
-```
-### CONSTRAINTS
-Constraints are used to specify rules for the data in a table. If there is any violation between the constraint and the data action, the action is aborted by the constraint. It can be specified when the table is created (using CREATE TABLE) or after it is created (using ALTER TABLE).
-### 1. NOT NULL
-When a column is defined as NOT NULL, it becomes mandatory to enter a value in that column.
-Syntax:
-```sql
-CREATE TABLE Table_Name (
-  column_name data_type(size) NOT NULL
-);
-```
-### 2. UNIQUE
-Ensures that values in a column are unique.
-Syntax:
-```sql
-CREATE TABLE Table_Name (
-  column_name data_type(size) UNIQUE
-);
-```
-### 3. CHECK
-Specifies a condition that each row must satisfy.
-Syntax:
-```sql
-CREATE TABLE Table_Name (
-  column_name data_type(size) CHECK (logical_expression)
-);
-```
-### 4. PRIMARY KEY
-Used to uniquely identify each record in a table.
-Properties:
-Must contain unique values.
-Cannot be null.
-Should contain minimal fields.
-Syntax:
-```sql
-CREATE TABLE Table_Name (
-  column_name data_type(size) PRIMARY KEY
-);
-```
-### 5. FOREIGN KEY
-Used to reference the primary key of another table.
-Syntax:
-```sql
-CREATE TABLE Table_Name (
-  column_name data_type(size),
-  FOREIGN KEY (column_name) REFERENCES other_table(column)
-);
-```
-### 6. DEFAULT
-Used to insert a default value into a column if no value is specified.
 
-Syntax:
+### 2. LEFT JOIN
+Returns all records from the left table, and matched records from the right.
+
+**Syntax:**
+
 ```sql
-CREATE TABLE Table_Name (
-  col_name1 data_type,
-  col_name2 data_type,
-  col_name3 data_type DEFAULT 'default_value'
-);
+SELECT columns
+FROM table1
+LEFT JOIN table2
+ON table1.column = table2.column;
+```
+### 3. RIGHT JOIN
+Returns all records from the right table, and matched records from the left.
+
+**Syntax:**
+
+```sql
+SELECT columns
+FROM table1
+RIGHT JOIN table2
+ON table1.column = table2.column;
+```
+### 4. FULL OUTER JOIN
+Returns all records when there is a match in either left or right table.
+
+**Syntax:**
+
+```sql
+SELECT columns
+FROM table1
+FULL OUTER JOIN table2
+ON table1.column = table2.column;
 ```
 
 **Question 1**
---
-In the Products table, insert a record where some fields are NULL, another record where all fields are filled without any NULL values, and a third record where some fields are filled, and others are left as NULL.
+From the following tables write a SQL query to find those customers with a grade less than 300. Return cust_name, customer city, grade, Salesman, salesmancity. The result should be ordered by ascending customer_id. 
 
-ProductID   Name              Category    Price       Stock
-----------  ---------------   ----------  ----------  ----------
-106         Fitness Tracker   Wearables
-107         Laptop            Electronics  999.99      50
-108         Wireless Earbuds  Accessories              100
- 
+Sample table: customer
+~~~
 
-```sql
-insert into Products(ProductID,Name,Category,Price,Stock)
-values(106,"Fitness Tracker","Wearables",NULL,NULL);
-insert into Products(ProductID,Name,Category,Price,Stock) 
-values(107,"Laptop","Electronic",999.99,50);
-insert into Products(ProductID,Name,Category,Price,Stock) 
-values(108,"Wireless Earbud","Accessorie",NULL,100); 
+ customer_id |   cust_name    |    city    | grade | salesman_id 
+-------------+----------------+------------+-------+-------------
+        3002 | Nick Rimando   | New York   |   100 |        5001
+        3007 | Brad Davis     | New York   |   200 |        5001
+        3005 | Graham Zusi    | California |   200 |        5002
+        3008 | Julian Green   | London     |   300 |        5002
+        3004 | Fabian Johnson | Paris      |   300 |        5006
+        3009 | Geoff Cameron  | Berlin     |   100 |        5003
+        3003 | Jozy Altidor   | Moscow     |   200 |        5007
+        3001 | Brad Guzan     | London     |       |        5005
+~~~
+Sample table: salesman
+~~~
 
-```
+ salesman_id |    name    |   city   | commission 
+-------------+------------+----------+------------
+        5001 | James Hoog | New York |       0.15
+        5002 | Nail Knite | Paris    |       0.13
+        5005 | Pit Alex   | London   |       0.11
+        5006 | Mc Lyon    | Paris    |       0.14
+        5007 | Paul Adam  | Rome     |       0.13
+        5003 | Lauson Hen | San Jose |       0.12
+~~~
+~~~
+SELECT c.cust_name, c.city, c.grade, s.name AS Salesman, s.city AS city 
+FROM customer c INNER JOIN salesman s ON c.salesman_id = s.salesman_id WHERE 
+    c.grade < 300
+ORDER BY 
+    c.customer_id ASC;
+~~~
 
 **Output:**
-<img width="1174" height="266" alt="image" src="https://github.com/user-attachments/assets/0ffdd7fc-c87b-425a-a896-bf1e7f18dfc4" />
+
+![image](https://github.com/user-attachments/assets/fb19768f-4823-45ae-a6c7-140af7e3e903)
+
 
 **Question 2**
----
-Write a SQL Query  to add attribute ISBN as varchar(30) and domain_dept as varchar(30) in the table 'books'
-
-```sql
-alter table books add  ISBN varchar(30);
-alter table books add domain_dept  varchar(30);
-
-```
+Write the SQL query that achieves the selection of the "cust_name" column from the "customer" table (aliased as "c"), with a left join on the "customer_id" column and a condition filtering for orders with a purchase amount less than 100.
+![image](https://github.com/user-attachments/assets/08aaf8da-5069-4257-99a1-32c99b6452a2)
+~~~
+SELECT c.cust_name
+FROM customer c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.purch_amt < 100;
+~~~
 
 **Output:**
-<img width="1178" height="378" alt="image" src="https://github.com/user-attachments/assets/e38922aa-1246-43c4-b8b8-4424945a1c80" />
+
+![image](https://github.com/user-attachments/assets/960b52b8-848e-48dd-8629-2d24d3922147)
 
 
 **Question 3**
----
-Insert a customer with CustomerID 301, Name Michael Jordan, Address 123 Maple St, City Chicago, and ZipCode 60616 into the Customers table.
+From the following tables write a SQL query to display the customer name, customer city, grade, salesman, salesman city. The results should be sorted by ascending customer_id.  
 
-```sql
-insert into Customers(CustomerID,Name,Address,City,ZipCode)
-values(301,"Michael Jordan","123 Maple St","Chicago",60616);
-```
+Sample table: customer
+~~~
+
+ customer_id |   cust_name    |    city    | grade | salesman_id 
+-------------+----------------+------------+-------+-------------
+        3002 | Nick Rimando   | New York   |   100 |        5001
+        3007 | Brad Davis     | New York   |   200 |        5001
+        3005 | Graham Zusi    | California |   200 |        5002
+        3008 | Julian Green   | London     |   300 |        5002
+        3004 | Fabian Johnson | Paris      |   300 |        5006
+        3009 | Geoff Cameron  | Berlin     |   100 |        5003
+        3003 | Jozy Altidor   | Moscow     |   200 |        5007
+        3001 | Brad Guzan     | London     |       |        5005
+~~~
+Sample table: salesman
+~~~
+
+ salesman_id |    name    |   city   | commission 
+-------------+------------+----------+------------
+        5001 | James Hoog | New York |       0.15
+        5002 | Nail Knite | Paris    |       0.13
+        5005 | Pit Alex   | London   |       0.11
+        5006 | Mc Lyon    | Paris    |       0.14
+        5007 | Paul Adam  | Rome     |       0.13
+        5003 | Lauson Hen | San Jose |       0.12
+~~~
+~~~
+SELECT 
+    c.cust_name, 
+    c.city, 
+    c.grade, 
+    s.name AS Salesman, 
+    s.city AS city
+FROM 
+    customer c
+INNER JOIN 
+    salesman s ON c.salesman_id = s.salesman_id
+ORDER BY 
+    c.customer_id ASC;
+~~~
 
 **Output:**
-<img width="1184" height="229" alt="image" src="https://github.com/user-attachments/assets/c1928ad6-3f64-4216-8483-1b0d0e53f895" />
+
+![image](https://github.com/user-attachments/assets/abd4336a-fcd4-4242-a991-cebeb6a14cc4)
 
 
 **Question 4**
----
-Create a new table named contacts with the following specifications:
-contact_id as INTEGER and primary key.
-first_name as TEXT and not NULL.
-last_name as TEXT and not NULL.
-email as TEXT.
-phone as TEXT and not NULL with a check constraint to ensure the length of phone is at least 10 characters.
+From the following tables write a SQL query to find the details of an order. Return ord_no, ord_date, purch_amt, Customer Name, grade, Salesman, commission. 
 
-```sql
-create table contacts(
-contact_id  INTEGER  primary key,
-first_name  TEXT not NULL,
-last_name  TEXT  not NULL,
-email  TEXT,
-phone  TEXT  not NULL  check(LENGTH(phone)>=10) 
+Sample table: orders
+~~~
 
+ord_no      purch_amt   ord_date    customer_id  salesman_id
+----------  ----------  ----------  -----------  -----------
+70001       150.5       2012-10-05  3005         5002
+70009       270.65      2012-09-10  3001         5005
+70002       65.26       2012-10-05  3002         5001
+70004       110.5       2012-08-17  3009         5003
+70007       948.5       2012-09-10  3005         5002
+70005       2400.6      2012-07-27  3007         5001
+70008       5760        2012-09-10  3002         5001
+70010       1983.43     2012-10-10  3004         5006
+70003       2480.4      2012-10-10  3009         5003
+70012       250.45      2012-06-27  3008         5002
+70011       75.29       2012-08-17  3003         5007
+70013       3045.6      2012-04-25  3002         5001
+~~~
+Sample table: customer
+~~~
 
-);
+ customer_id |   cust_name    |    city    | grade | salesman_id 
+-------------+----------------+------------+-------+-------------
+        3002 | Nick Rimando   | New York   |   100 |        5001
+        3007 | Brad Davis     | New York   |   200 |        5001
+        3005 | Graham Zusi    | California |   200 |        5002
+        3008 | Julian Green   | London     |   300 |        5002
+        3004 | Fabian Johnson | Paris      |   300 |        5006
+        3009 | Geoff Cameron  | Berlin     |   100 |        5003
+        3003 | Jozy Altidor   | Moscow     |   200 |        5007
+        3001 | Brad Guzan     | London     |       |        5005
+~~~
+Sample table: salesman
+~~~
 
-```
+ salesman_id |    name    |   city   | commission 
+-------------+------------+----------+------------
+        5001 | James Hoog | New York |       0.15
+        5002 | Nail Knite | Paris    |       0.13
+        5005 | Pit Alex   | London   |       0.11
+        5006 | Mc Lyon    | Paris    |       0.14
+        5007 | Paul Adam  | Rome     |       0.13
+        5003 | Lauson Hen | San Jose |       0.12
+~~~
+~~~
+SELECT 
+    o.ord_no,
+    o.ord_date,
+    o.purch_amt,
+    c.cust_name AS "Customer Name",
+    c.grade,
+    s.name AS "Salesman",
+    s.commission
+FROM 
+    orders o
+JOIN 
+    customer c ON o.customer_id = c.customer_id
+JOIN 
+    salesman s ON o.salesman_id = s.salesman_id;
+~~~
 
 **Output:**
-<img width="1192" height="323" alt="image" src="https://github.com/user-attachments/assets/206b714d-dfdd-42b2-95fd-77c09f199ca8" />
 
+![image](https://github.com/user-attachments/assets/ee9de951-4d51-4e9a-9876-7c44ac1c83b1)
 
 **Question 5**
----
-Create a table named Invoices with the following constraints:
+Write a SQL statement to join the tables salesman, customer and orders so that the same column of each table appears once and only the relational rows are returned. 
 
-InvoiceID as INTEGER should be the primary key.
-InvoiceDate as DATE.
-DueDate as DATE should be greater than the InvoiceDate.
-Amount as REAL should be greater than 0.
+Sample table: orders
+~~~
 
-```sql
-create table Invoices(
-InvoiceID INTEGER  primary key,
-InvoiceDate  DATE,
-DueDate  DATE check(DueDate>InvoiceDate),
-Amount  REAL check(Amount > 0) 
+ord_no      purch_amt   ord_date    customer_id  salesman_id
+----------  ----------  ----------  -----------  -----------
+70001       150.5       2012-10-05  3005         5002
+70009       270.65      2012-09-10  3001         5005
+70002       65.26       2012-10-05  3002         5001
+70004       110.5       2012-08-17  3009         5003
+70007       948.5       2012-09-10  3005         5002
+70005       2400.6      2012-07-27  3007         5001
+70008       5760        2012-09-10  3002         5001
+70010       1983.43     2012-10-10  3004         5006
+70003       2480.4      2012-10-10  3009         5003
+70012       250.45      2012-06-27  3008         5002
+70011       75.29       2012-08-17  3003         5007
+70013       3045.6      2012-04-25  3002         5001
+~~~
+Sample table: customer
+~~~
 
-);
-```
+ customer_id |   cust_name    |    city    | grade | salesman_id 
+-------------+----------------+------------+-------+-------------
+        3002 | Nick Rimando   | New York   |   100 |        5001
+        3007 | Brad Davis     | New York   |   200 |        5001
+        3005 | Graham Zusi    | California |   200 |        5002
+        3008 | Julian Green   | London     |   300 |        5002
+        3004 | Fabian Johnson | Paris      |   300 |        5006
+        3009 | Geoff Cameron  | Berlin     |   100 |        5003
+        3003 | Jozy Altidor   | Moscow     |   200 |        5007
+        3001 | Brad Guzan     | London     |       |        5005
+~~~
+Sample table : salesman
+~~~
+
+ salesman_id |    name    |   city   | commission 
+-------------+------------+----------+------------
+        5001 | James Hoog | New York |       0.15
+        5002 | Nail Knite | Paris    |       0.13
+        5005 | Pit Alex   | London   |       0.11
+        5006 | Mc Lyon    | Paris    |       0.14
+        5007 | Paul Adam  | Rome     |       0.13
+        5003 | Lauson Hen | San Jose |       0.12
+~~~
+~~~
+SELECT 
+    o.ord_no,
+    o.purch_amt,
+    o.ord_date,
+    c.cust_name,
+    c.city AS customer_city,
+    c.grade,
+    s.name AS salesman_name,
+    s.city AS salesman_city,
+    s.commission
+FROM 
+    orders o
+JOIN 
+    customer c ON o.customer_id = c.customer_id
+JOIN 
+    salesman s ON o.salesman_id = s.salesman_id;
+~~~
 
 **Output:**
-<img width="1176" height="265" alt="image" src="https://github.com/user-attachments/assets/c3592053-58bd-4221-aa31-66d2a2afbf1c" />
+
+![image](https://github.com/user-attachments/assets/c9b9e311-9d4b-415b-af3b-c3dbbc7bc8a2)
 
 
 **Question 6**
----
-Create a new table named item with the following specifications and constraints:
-item_id as TEXT and as primary key.
-item_desc as TEXT.
-rate as INTEGER.
-icom_id as TEXT with a length of 4.
-icom_id is a foreign key referencing com_id in the company table.
-The foreign key should set NULL on updates and deletes.
-item_desc and rate should not accept NULL.
+Write the SQL query that achieves the selection of all columns from the "patients" table (aliased as "p"), with an inner join on the "patient_id" column and a condition filtering for appointments with an appointment date between '2024-02-01' and '2024-02-28'.
+![image](https://github.com/user-attachments/assets/788c6324-2a33-4607-9b3c-ce0fbb8c721a)
+~~~
+SELECT p.*
+FROM patients p
+INNER JOIN appointments a ON p.patient_id = a.patient_id
+WHERE a.appointment_date BETWEEN '2024-02-01' AND '2024-02-28';
+~~~
 
-```sql
-create table item(
-item_id  TEXT  primary key,
-item_desc  TEXT not null,
-rate  INTEGER not null,
-icom_id TEXT(4),
-foreign key(icom_id) references company(com_id) on update set null on delete set null
-
-
-
-);
-```
 
 **Output:**
 
-<img width="1179" height="343" alt="image" src="https://github.com/user-attachments/assets/4124bb65-74ad-448e-b434-fff93570c5db" />
-
+![image](https://github.com/user-attachments/assets/7da6d49a-ba82-474b-b638-3ce851014f12)
 
 **Question 7**
----
-Insert all products from Discontinued_products into Products.
+SQL statement to generate a report with customer name, city, order number, order date, order amount, salesperson name, and commission to determine if any of the existing customers have not placed orders or if they have placed orders through their salesman or by themselves.
 
-Table attributes are ProductID, ProductName, Price, Stock
+Sample table: customer
+~~~
 
-```sql
-insert into Products(ProductID, ProductName, Price, Stock)
-select * from Discontinued_products;
-```
+ customer_id |   cust_name    |    city    | grade | salesman_id 
+-------------+----------------+------------+-------+-------------
+        3002 | Nick Rimando   | New York   |   100 |        5001
+        3007 | Brad Davis     | New York   |   200 |        5001
+        3005 | Graham Zusi    | California |   200 |        5002
+        3008 | Julian Green   | London     |   300 |        5002
+        3004 | Fabian Johnson | Paris      |   300 |        5006
+        3009 | Geoff Cameron  | Berlin     |   100 |        5003
+        3003 | Jozy Altidor   | Moscow     |   200 |        5007
+        3001 | Brad Guzan     | London     |       |        5005
+~~~
+Sample table: orders
+~~~
 
+ord_no      purch_amt   ord_date    customer_id  salesman_id
+----------  ----------  ----------  -----------  -----------
+70001       150.5       2012-10-05  3005         5002
+70009       270.65      2012-09-10  3001         5005
+70002       65.26       2012-10-05  3002         5001
+70004       110.5       2012-08-17  3009         5003
+70007       948.5       2012-09-10  3005         5002
+70005       2400.6      2012-07-27  3007         5001
+70008       5760        2012-09-10  3002         5001
+70010       1983.43     2012-10-10  3004         5006
+70003       2480.4      2012-10-10  3009         5003
+70012       250.45      2012-06-27  3008         5002
+70011       75.29       2012-08-17  3003         5007
+70013       3045.6      2012-04-25  3002         5001
+~~~
+Sample table: salesman
+~~~
+
+ salesman_id |    name    |   city   | commission 
+-------------+------------+----------+------------
+        5001 | James Hoog | New York |       0.15
+        5002 | Nail Knite | Paris    |       0.13
+        5005 | Pit Alex   | London   |       0.11
+        5006 | Mc Lyon    | Paris    |       0.14
+        5007 | Paul Adam  | Rome     |       0.13
+        5003 | Lauson Hen | San Jose |       0.12
+~~~
+~~~
+SELECT 
+    c.cust_name,
+    c.city,
+    o.ord_no,
+    o.ord_date,
+    o.purch_amt AS "Order Amount",
+    s.name,
+    s.commission
+FROM 
+    customer c
+LEFT JOIN 
+    orders o ON c.customer_id = o.customer_id
+LEFT JOIN 
+    salesman s ON o.salesman_id = s.salesman_id;
+~~~
 **Output:**
-<img width="1186" height="286" alt="image" src="https://github.com/user-attachments/assets/ae4df709-20ee-4969-a04f-5de1f1a1ff38" />
+
+![image](https://github.com/user-attachments/assets/9e4e04ab-ce88-43cc-9a7c-266d2d60ce34)
 
 
 **Question 8**
----
-Create a table named Events with the following columns:
-
-EventID as INTEGER
-EventName as TEXT
-EventDate as DATE
-
-```sql
-create table Events(
-EventID  INTEGER,
-EventName  TEXT,
-EventDate  DATE 
-
-);
-```
+Write the SQL query that achieves the selection of the first name from the "patients" table (aliased as "patient_name") and all columns from the "test_results" table (aliased as "t"), with an inner join on the "patient_id" column and a condition filtering for test results with the test name 'Blood Pressure'.
+![image](https://github.com/user-attachments/assets/1df56d52-08de-4577-a2ae-458a0b07da93)
+~~~
+SELECT p.first_name AS patient_name, t.*
+FROM patients p
+INNER JOIN test_results t ON p.patient_id = t.patient_id
+WHERE t.test_name = 'Blood Pressure';
+~~~
 
 **Output:**
-<img width="1189" height="376" alt="image" src="https://github.com/user-attachments/assets/75ae042c-dc71-4cd3-9915-55dc64e98b0f" />
-
+![image](https://github.com/user-attachments/assets/4dfa98cd-445a-4386-a013-0c51d811cf50)
 
 **Question 9**
----
-Write a SQL query to modify the Student_details table by adding a new column Email of type VARCHAR(50) and updating the column MARKS to have a default value of 0.
+Write the SQL query that achieves the selection of all columns from the "patients" table (aliased as "p"), with an inner join on the "patient_id" column and conditions filtering for test results with the test names 'Blood Test' or 'Blood Pressure' and results not containing the substring 'Normal'.
+![image](https://github.com/user-attachments/assets/ed5d407e-4808-437d-aed5-b4660a014f10)
+~~~
+SELECT p.*
+FROM patients p
+INNER JOIN test_results t ON p.patient_id = t.patient_id
+WHERE t.test_name IN ('Blood Test', 'Blood Pressure')
+  AND t.result NOT LIKE '%Normal%';
+~~~
 
-```sql
-alter table Student_details  add Email VARCHAR(50);
-alter table Student_details  add MARKS default 0;
-```
 
 **Output:**
-<img width="1187" height="233" alt="image" src="https://github.com/user-attachments/assets/3dd99e34-c251-47dd-a90a-3bcc0c3b3c1a" />
+
+![image](https://github.com/user-attachments/assets/a5fcd77e-73be-472d-99b6-1d400b85acd3)
 
 **Question 10**
----
-Create a table named Employees with the following constraints:
+Write the SQL query that achieves the selection of the "cust_name" column from the "customer" table (aliased as "c") and the "name" column from the "salesman" table (aliased as "s"), with a left join on the "salesman_id" column and a condition filtering for customers in the same city as the salesman.
+![image](https://github.com/user-attachments/assets/b12959e5-0e18-4564-8b94-cc16a9f0292a)
 
-EmployeeID should be the primary key.
-FirstName and LastName should be NOT NULL.
-Email should be unique.
-Salary should be greater than 0.
-DepartmentID should be a foreign key referencing the Departments table.
-
-```sql
-create table Employees(
-EmployeeID  primary key,
-FirstName varchar(225)NOT NULL,
-LastName varchar(225) NOT NULL,
-Email  UNIQUE,
-Salary check(salary>0),
-DepartmentID INTEGER,
-foreign key(DepartmentID) references  Departments(DepartmentID)
-
-
-);
-```
-
+~~~
+SELECT c.cust_name, s.name
+FROM customer c
+LEFT JOIN salesman s ON c.salesman_id = s.salesman_id
+WHERE c.city = s.city;
+~~~
 **Output:**
-<img width="1177" height="421" alt="image" src="https://github.com/user-attachments/assets/81e75c1d-9942-4862-bd96-2b7d4401842f" />
+
+![image](https://github.com/user-attachments/assets/dd9fc321-948d-4608-a115-461dcb2c6456)
 
 
+<img width="997" height="80" alt="image" src="https://github.com/user-attachments/assets/655fb44a-4f2e-4b34-9ef1-723ed50ee1e7" />
 
 ## RESULT
-Thus, the SQL queries to implement different types of constraints and DDL commands have been executed successfully.
+Thus, the SQL queries to implement different types of joins have been executed successfully.
